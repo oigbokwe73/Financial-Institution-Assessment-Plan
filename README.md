@@ -94,5 +94,121 @@ flowchart TD
     Objective_and_Requirement_Analysis --> Current_State_Infrastructure_Analysis
 ```
 
-This diagram summarizes the flow between defining objectives, understanding data requirements, and assessing the current infrastructure’s capability to support continuous data export to Azure, with a focus on the specific needs of a financial banking organization.
+Expanding on **Data Transformation and Canonical Mapping** is critical for creating a consistent, reliable, and high-quality data export pipeline from on-premises systems to Azure, especially in financial services. This process ensures data standardization, accuracy, and usability for advanced analytics and reporting in Azure.
+
+---
+
+### **Overview of Data Transformation and Canonical Mapping**
+
+In a continuous data export scenario, data from diverse on-premises sources (such as transactional systems, customer databases, and logs) must be transformed to fit a standardized or canonical format before reaching Azure. Canonical mapping enforces consistent data schemas, enabling interoperability across systems, simplifying data management, and facilitating downstream analytics.
+
+### **Key Components of Data Transformation and Canonical Mapping**
+
+1. **Canonical Schema Definition**
+   - **Purpose**: A canonical schema is a standardized model that defines the structure, format, and semantics of data fields across different systems. This schema ensures data consistency, simplifies integration, and improves data quality.
+   - **Schema Definition**: 
+      - Create canonical models based on each data type, such as transactions, customer records, or audit logs.
+      - Define field names, data types, relationships, and validation rules for each model.
+      - Incorporate metadata fields (e.g., source system, ingestion timestamp, and processing status) to provide additional context.
+   - **Financial Services Example**:
+      - **Transaction Data Model**: Standard fields might include `TransactionID`, `AccountNumber`, `Amount`, `Timestamp`, `TransactionType`, `Currency`, `Location`, and `MerchantID`.
+
+2. **Schema Mapping and Data Transformation**
+   - **Field Mapping**: Map each source field from the on-prem system to its corresponding canonical field in Azure.
+      - Example: In a customer database, map `Cust_ID` (source) to `CustomerID` (canonical).
+      - Ensure that source fields that don’t have a direct match in the canonical model are appropriately handled (e.g., by creating custom fields or excluding them).
+   - **Data Type Transformation**:
+      - Convert data types as necessary to meet the canonical model requirements.
+      - Example: Convert `Amount` from `String` to `Decimal` if required by the canonical schema in Azure.
+   - **Data Normalization**:
+      - Standardize data formats across sources. For example, ensure all dates follow `YYYY-MM-DD` format.
+      - Apply currency conversions or unit standardization where necessary.
+   - **Null Handling**:
+      - Define null-handling rules, such as replacing null values with defaults or placeholders (e.g., `N/A` for missing `MerchantID`).
+
+3. **Data Quality Rules and Validation**
+   - **Field-Level Validation**: Check each field against canonical rules (e.g., `TransactionID` should be unique, `Amount` should be positive).
+   - **Data Consistency Rules**:
+      - Validate that records conform to the defined schema structure. For example, `TransactionType` might only accept specific values (`Deposit`, `Withdrawal`, `Transfer`).
+   - **Error Handling**:
+      - Log and handle records that fail validation. Errors can be routed to a dead-letter queue or an error handling process for later review.
+
+4. **Transformation Logic for Specific Use Cases**
+   - **Real-Time Fraud Detection**:
+      - Transform data to canonical models on ingestion, making it analytics-ready.
+      - Apply custom logic to identify anomalies in transaction patterns.
+   - **Compliance and Regulatory Reporting**:
+      - Define transformations to align with regulatory requirements (e.g., data masking on sensitive fields).
+      - Ensure data is formatted for easy extraction to reporting tools (e.g., Power BI, Synapse Analytics).
+
+### **Data Transformation Pipeline Architecture**
+
+In Azure, tools like **Azure Data Factory (ADF)**, **Azure Synapse Pipelines**, or **Databricks** are typically used for data transformation and canonical mapping. Here’s a breakdown of a typical pipeline for a financial services use case:
+
+1. **Data Ingestion Layer**:
+   - Data from on-premises sources is ingested in raw format into **Azure Data Lake Storage (ADLS)**.
+   - Use ADF or Synapse Pipelines to orchestrate the ingestion and initial staging of data.
+   
+2. **Staging and Transformation Layer**:
+   - In the staging layer, raw data is temporarily stored before transformation.
+   - Use transformation activities in ADF, Synapse, or Databricks to map source fields to canonical fields, standardize formats, and enforce validation rules.
+
+3. **Validation and Quality Check Layer**:
+   - Validate transformed data against canonical schema requirements.
+   - Route any invalid data to a dead-letter queue or error-handling pipeline.
+
+4. **Final Data Storage and Analytics Layer**:
+   - Store transformed data in **Azure Synapse** or **Azure SQL Database** for easy access by analytics and reporting tools.
+   - This data is now in canonical form, making it compatible with advanced analytics, machine learning, and reporting.
+
+### **Detailed Data Transformation Workflow**
+
+```mermaid
+flowchart TD
+    A[Ingest Data from On-Prem] --> B[Staging Layer in ADLS]
+    B --> C[Transformation Layer]
+    C --> D[Map Fields to Canonical Schema]
+    D --> E[Data Type Transformation]
+    E --> F[Normalization and Null Handling]
+    F --> G[Validation and Quality Check]
+    G -->|Valid Data| H[Store in Azure Synapse]
+    G -->|Invalid Data| I[Error Handling Queue]
+
+    subgraph TransformationProcess
+        D --> E
+        E --> F
+    end
+```
+
+This workflow ensures data exported from on-premises systems to Azure is fully transformed and standardized into the canonical model, ready for analytics and machine learning.
+
+### **Example Canonical Mapping in Financial Services**
+
+Consider a bank’s transactional data that needs canonical mapping from the source schema to a target schema in Azure.
+
+#### **Source Schema**:
+- **`Trans_ID`**: Unique ID of the transaction.
+- **`Acc_Num`**: Customer’s account number.
+- **`Trx_Amt`**: Transaction amount in cents.
+- **`Trans_Date`**: Date of transaction in `MM-DD-YYYY`.
+- **`Trans_Type`**: Type of transaction (`W`, `D`, `T` for Withdrawal, Deposit, Transfer).
+
+#### **Canonical Schema**:
+- **`TransactionID`**: String, mapped directly from `Trans_ID`.
+- **`AccountNumber`**: String, mapped from `Acc_Num`.
+- **`Amount`**: Decimal, converted from `Trx_Amt` (divided by 100 to convert cents to dollars).
+- **`Timestamp`**: Standardized to `YYYY-MM-DD` from `Trans_Date`.
+- **`TransactionType`**: Expanded values (`W` -> `Withdrawal`, `D` -> `Deposit`, `T` -> `Transfer`).
+
+#### **Transformation Steps**:
+1. **Field Mapping**: Map `Trans_ID` to `TransactionID`, `Acc_Num` to `AccountNumber`, etc.
+2. **Data Type Conversion**: Convert `Trx_Amt` from cents (integer) to dollars (decimal).
+3. **Date Standardization**: Convert `Trans_Date` to `Timestamp` in `YYYY-MM-DD`.
+4. **Code Expansion**: Map codes in `Trans_Type` to descriptive labels.
+
+---
+
+### **Conclusion**
+
+The **Data Transformation and Canonical Mapping** process in Azure for financial services involves defining a canonical schema that standardizes data formats, transforming data to fit this schema, and applying validation and error-handling to ensure data quality. This process allows data to flow from on-premises to Azure in a usable, consistent format, enabling reliable analytics and reporting while meeting financial compliance requirements.
 
