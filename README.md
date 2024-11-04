@@ -1,6 +1,5 @@
 # Financial-Institution-Assessment-Plan
 
-Let's expand in detail on the **"Objective and Requirement Analysis"** and **"Current State Infrastructure Analysis"** for a continuous data export solution from on-premises to Azure for a financial banking use case.
 
 ---
 
