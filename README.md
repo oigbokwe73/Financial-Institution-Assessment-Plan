@@ -94,14 +94,6 @@ flowchart TD
     Objective_and_Requirement_Analysis --> Current_State_Infrastructure_Analysis
 ```
 
-Expanding on **Data Transformation and Canonical Mapping** is critical for creating a consistent, reliable, and high-quality data export pipeline from on-premises systems to Azure, especially in financial services. This process ensures data standardization, accuracy, and usability for advanced analytics and reporting in Azure.
-
----
-
-### **Overview of Data Transformation and Canonical Mapping**
-
-In a continuous data export scenario, data from diverse on-premises sources (such as transactional systems, customer databases, and logs) must be transformed to fit a standardized or canonical format before reaching Azure. Canonical mapping enforces consistent data schemas, enabling interoperability across systems, simplifying data management, and facilitating downstream analytics.
-
 ### **Key Components of Data Transformation and Canonical Mapping**
 
 1. **Canonical Schema Definition**
@@ -143,22 +135,22 @@ In a continuous data export scenario, data from diverse on-premises sources (suc
 
 ### **Data Transformation Pipeline Architecture**
 
-In Azure, tools like **Azure Data Factory (ADF)**, **Azure Synapse Pipelines**, or **Databricks** are typically used for data transformation and canonical mapping. Here’s a breakdown of a typical pipeline for a financial services use case:
+In Azure, tools like **runtime orchestrator service** will be used for data transformation and canonical mapping. Here’s a breakdown of a typical pipeline for a financial services use case:
 
 1. **Data Ingestion Layer**:
    - Data from on-premises sources is ingested in raw format into **Azure Data Lake Storage (ADLS)**.
-   - Use ADF or Synapse Pipelines to orchestrate the ingestion and initial staging of data.
+   - Use a runtime orchestrator service for ingestion and initial staging of data.
    
 2. **Staging and Transformation Layer**:
    - In the staging layer, raw data is temporarily stored before transformation.
-   - Use transformation activities in ADF, Synapse, or Databricks to map source fields to canonical fields, standardize formats, and enforce validation rules.
+   - Use transformation activities in a runtime orchestrator service to map source fields to canonical fields, standardize formats, and enforce validation rules.
 
 3. **Validation and Quality Check Layer**:
    - Validate transformed data against canonical schema requirements.
    - Route any invalid data to a dead-letter queue or error-handling pipeline.
 
 4. **Final Data Storage and Analytics Layer**:
-   - Store transformed data in **Azure Synapse** or **Azure SQL Database** for easy access by analytics and reporting tools.
+   - Store transformed data in **Azure Storage** or **Azure SQL Database** for easy access by analytics and reporting tools.
    - This data is now in canonical form, making it compatible with advanced analytics, machine learning, and reporting.
 
 ### **Detailed Data Transformation Workflow**
@@ -171,7 +163,7 @@ flowchart TD
     D --> E[Data Type Transformation]
     E --> F[Normalization and Null Handling]
     F --> G[Validation and Quality Check]
-    G -->|Valid Data| H[Store in Azure Synapse]
+    G -->|Valid Data| H[Store in Azure Data Lake of Azure SQL]
     G -->|Invalid Data| I[Error Handling Queue]
 
     subgraph TransformationProcess
@@ -207,8 +199,4 @@ Consider a bank’s transactional data that needs canonical mapping from the sou
 4. **Code Expansion**: Map codes in `Trans_Type` to descriptive labels.
 
 ---
-
-### **Conclusion**
-
-The **Data Transformation and Canonical Mapping** process in Azure for financial services involves defining a canonical schema that standardizes data formats, transforming data to fit this schema, and applying validation and error-handling to ensure data quality. This process allows data to flow from on-premises to Azure in a usable, consistent format, enabling reliable analytics and reporting while meeting financial compliance requirements.
 
