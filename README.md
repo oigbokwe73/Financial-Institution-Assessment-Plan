@@ -163,7 +163,7 @@ flowchart TD
     D --> E[Data Type Transformation]
     E --> F[Normalization and Null Handling]
     F --> G[Validation and Quality Check]
-    G -->|Valid Data| H[Store in Azure Data Lake of Azure SQL]
+    G -->|Valid Data| H[Store in Azure Data Lake or Azure SQL]
     G -->|Invalid Data| I[Error Handling Queue]
 
     subgraph TransformationProcess
